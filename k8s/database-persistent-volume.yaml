@@ -6,7 +6,8 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: manual
+  # storageClassName: manual # locally
+  storageClassName: standard # gcloud
   capacity:
     storage: 2Gi
   accessModes:

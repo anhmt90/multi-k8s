@@ -18,9 +18,9 @@ before_install:
   - gcloud container clusters get-credentials stephangrider-cluster
   
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker build -t anhmt90/react-test -f ./client/Dockerfile.dev ./client/Dockerfile.dev
+  - docker build -t anhmt90/test-react -f ./client/Dockerfile.dev ./client
 script:
-  - docker run -e CI=true anhmt90/docker-react npm run test
+  - docker run -e CI=true anhmt90/test-react npm run test
 deploy:
   provider: script
   script: bash ./deploy.sh

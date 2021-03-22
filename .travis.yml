@@ -1,0 +1,28 @@
+sudo: required
+services:
+  - docker
+env:
+  global:
+    - SHA=$(git rev-parse HEAD)
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+before_install:
+  - openssl aes-256-cbc -K $encrypted_b0dd2b1c1761_key -iv $encrypted_b0dd2b1c1761_iv -in evocative-lodge-308311-e4a1ded8adef.json.enc -out evocative-lodge-308311-e4a1ded8adef.json -d
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $ HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file evocative-lodge-308311-e4a1ded8adef.json
+  
+  # run the next 3 commands for every new gcloud project or new gcloud cluster 
+  - gcloud config set project evocative-lodge-308311
+  - gcloud config set compute/zone europe-west1-b
+  - gcloud container clusters get-credentials stephangrider-cluster
+  
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t anhmt90/react-test -f ./client/Dockerfile.dev ./client/Dockerfile.dev
+script:
+  - docker run -e CI=true anhmt90/docker-react npm run test
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: main
